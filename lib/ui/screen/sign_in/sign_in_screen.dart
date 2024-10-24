@@ -8,6 +8,12 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+
+  bool _obscureText = true;
+
+  final _emailTextController = TextEditingController();
+  final _passwordTextController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,6 +32,7 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
               const SizedBox(height: 20),
               TextField(
+                controller: _emailTextController,
                 decoration: InputDecoration(
                   labelText: 'User name',
                   border: OutlineInputBorder(
@@ -35,8 +42,16 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
               const SizedBox(height: 10),
               TextField(
+                controller: _passwordTextController,
+                obscureText: _obscureText,
                 decoration: InputDecoration(
                   labelText: 'Password',
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscureText ?Icons.visibility : Icons.visibility_off),
+                    onPressed: () {
+                      _obscureText = !_obscureText;
+                    },
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
