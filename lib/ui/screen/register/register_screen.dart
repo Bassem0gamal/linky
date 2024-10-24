@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:linky/ui/screen/home/home_screen.dart';
 import 'package:linky/ui/screen/sign_in/sign_in_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -9,6 +11,14 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+
+  bool _obscureTextP = true;
+  bool _obscureTextPC = true;
+
+  final _emailTextController = TextEditingController();
+  final _passwordTextController = TextEditingController();
+  final _confirmPasswordTextController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,6 +39,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const Text('Register and let’s chat with Linky'),
               const SizedBox(height: 8),
               TextField(
+                controller: _emailTextController,
                 decoration: InputDecoration(
                   labelText: 'User name',
                   border: OutlineInputBorder(
@@ -38,8 +49,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 10),
               TextField(
+                controller: _passwordTextController,
+                obscureText: _obscureTextP,
                 decoration: InputDecoration(
                   labelText: 'Password',
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscureTextP ?Icons.visibility : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _obscureTextP = !_obscureTextP;
+                      });
+                    },
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _confirmPasswordTextController,
+                obscureText: _obscureTextPC,
+                decoration: InputDecoration(
+                  labelText: 'Confirm Password',
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscureTextPC ?Icons.visibility : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _obscureTextPC = !_obscureTextPC;
+                      });
+                    },
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
