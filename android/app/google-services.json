@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "479792896635",
+    "project_id": "linky-a5dbc",
+    "storage_bucket": "linky-a5dbc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:479792896635:android:1603ff886812d15a03e0de",
+        "android_client_info": {
+          "package_name": "com.example.linky"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8A7U-_5ZTcXjWiaGTM155OgZkn-lPjZM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
