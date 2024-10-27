@@ -18,7 +18,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final _massageController = TextEditingController();
+  final _messageController = TextEditingController();
 
   final user = FirebaseAuth.instance.currentUser;
   final db = FirebaseFirestore.instance;
@@ -51,28 +51,26 @@ class _ChatScreenState extends State<ChatScreen> {
                     .where("room_id", isEqualTo: widget.roomId)
                     .snapshots(),
                 builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return const Text('Something went wrong');
-                  }
 
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  return ListView(
-                      children: snapshot.data!.docs.map((document) {
-                    final map = document.data();
-                    final senderName = db.collection("users").doc(document["sender_Id"]).get();
+                  return
+                      ListView(
+                          children: snapshot.data!.docs.map((document) {
+                        final map = document.data();
+                        final senderName = db.collection("users").doc(document["sender_Id"]).get();
 
-                    return ChatWidget(
-                      alignment: user!.uid == map["sender_Id"]
-                          ? Alignment.topRight
-                          : Alignment.topLeft,
-                      name: 'senderName["user_name"]',
-                      text: map["text"],
-                      date: map["timestamp"],
-                    );
-                  }).toList());
+                        return ChatWidget(
+                          alignment: user!.uid == map["sender_Id"]
+                              ? Alignment.topRight
+                              : Alignment.topLeft,
+                          name: 'senderName["user_name"]',
+                          text: map["text"],
+                          date: map["timestamp"],
+                        );
+                      }).toList());
                 }),
           ),
         ],

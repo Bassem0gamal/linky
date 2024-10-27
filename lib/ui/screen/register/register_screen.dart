@@ -136,7 +136,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInScreen()));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SignInScreen(),
+                      ),
+                    );
                   },
                   child: const Text(
                     'Sign-in',
@@ -157,15 +162,17 @@ _onRegisterPressed(String email, String password, context) async {
     const CircularProgressIndicator(
       valueColor: AlwaysStoppedAnimation(Colors.blue),
     );
-    await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(
+    await FirebaseAuth.instance.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
+
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => const HomeScreen()));
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HomeScreen(),
+      ),
+    );
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -178,8 +185,7 @@ _onRegisterPressed(String email, String password, context) async {
       print('The password provided is too weak.');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content:
-          Text('The password provided is too weak.'),
+          content: Text('The password provided is too weak.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -187,8 +193,7 @@ _onRegisterPressed(String email, String password, context) async {
       print('The account already exists for that email.');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-              'The account already exists for that email.'),
+          content: Text('The account already exists for that email.'),
           backgroundColor: Colors.red,
         ),
       );
