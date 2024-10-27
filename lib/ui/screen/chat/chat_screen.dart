@@ -47,8 +47,8 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: StreamBuilder(
                 stream: FirebaseFirestore.instance
-                    .collection('massages')
-                    .where("room_id", isEqualTo: widget.roomId)
+                    .collection('messages')
+                    .where("room_id", isEqualTo: widget.roomId).orderBy("time_stamp",descending: true)
                     .snapshots(),
                 builder: (context, snapshot) {
 
@@ -58,23 +58,66 @@ class _ChatScreenState extends State<ChatScreen> {
 
                   return
                       ListView(
+                        reverse: true,
                           children: snapshot.data!.docs.map((document) {
                         final map = document.data();
-                        final senderName = db.collection("users").doc(document["sender_Id"]).get();
 
                         return ChatWidget(
-                          alignment: user!.uid == map["sender_Id"]
-                              ? Alignment.topRight
-                              : Alignment.topLeft,
                           name: 'senderName["user_name"]',
                           text: map["text"],
-                          date: map["timestamp"],
+                          date: (document.get("time_stamp") as Timestamp).toDate(),
+                          isMe: user!.uid == map["sender_id"],
                         );
-                      }).toList());
+
+                          }).toList());
                 }),
           ),
+          Container(
+            color: Colors.blue,
+            child: Padding(
+              padding: EdgeInsets.only(left: 8, right: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      
+                      controller: _messageController,
+                      decoration: const InputDecoration(
+                        hintText: 'Type your message...',
+                        hintStyle: TextStyle(color: Colors.white)
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        _onMessageSend(_messageController.text, widget.roomId, user);
+                        _messageController.clear();
+                      },
+                      icon: const Icon(Icons.send,color: Colors.white,)
+                  ),
+                ],
+              ),
+            ),
+          )
         ],
       ),
     );
   }
+}
+
+_onMessageSend(String messageText, String roomId ,user) async {
+    const CircularProgressIndicator(
+      valueColor: AlwaysStoppedAnimation(Colors.blue),
+    );
+
+    if(messageText.isNotEmpty) {
+      final message = {
+        'room_id': roomId,
+        'sender_id': user!.uid,
+        'text': messageText,
+        'time_stamp': FieldValue.serverTimestamp(),
+      };
+
+      await FirebaseFirestore.instance.collection("messages").add(message);
+    }
 }
