@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:linky/ui/screen/home_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -8,7 +10,6 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-
   bool _obscureText = true;
 
   final _emailTextController = TextEditingController();
@@ -26,8 +27,9 @@ class _SignInScreenState extends State<SignInScreen> {
               const Text(
                 'Linky',
                 style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,color: Colors.blue
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
                 ),
               ),
               const SizedBox(height: 20),
@@ -47,7 +49,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 decoration: InputDecoration(
                   labelText: 'Password',
                   suffixIcon: IconButton(
-                    icon: Icon(_obscureText ?Icons.visibility : Icons.visibility_off),
+                    icon: Icon(
+                        _obscureText ? Icons.visibility : Icons.visibility_off),
                     onPressed: () {
                       _obscureText = !_obscureText;
                     },
@@ -60,7 +63,8 @@ class _SignInScreenState extends State<SignInScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  // TODO :Handle sign-in logic here
+                  _signIn(_emailTextController.text,
+                      _passwordTextController.text, context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -73,6 +77,23 @@ class _SignInScreenState extends State<SignInScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+_signIn(String email, String password, context) async {
+  try {
+    await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: password);
+
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+  } on FirebaseAuthException catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Incorrect name or password"),
+        backgroundColor: Colors.red,
       ),
     );
   }
