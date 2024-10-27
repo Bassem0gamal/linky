@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:linky/ui/screen/home/home_screen.dart';
+import 'package:linky/ui/screen/home_screen.dart';
 import 'package:linky/ui/screen/sign_in/sign_in_screen.dart';
 import 'package:linky/ui/widget/text_form_field_widget.dart';
 
@@ -193,13 +193,5 @@ _onRegisterPressed(String email, String password, context) async {
         ),
       );
     }
-  } catch (e) {
-    print(e);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$e'),
-        backgroundColor: Colors.red,
-      ),
-    );
   }
 }
