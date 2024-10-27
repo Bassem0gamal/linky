@@ -1,40 +1,81 @@
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:linky/ui/widget/chat_header.dart';
 import 'package:linky/ui/widget/chat_widget.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final String roomId;
+
+  const ChatScreen({
+    super.key,
+    required this.roomId,
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final _massageController = TextEditingController();
+
+  final user = FirebaseAuth.instance.currentUser;
+  final db = FirebaseFirestore.instance;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            onPressed: () {},
-            icon: const Icon(CupertinoIcons.back)
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(CupertinoIcons.back)),
+        title: const Center(
+          child: Padding(
+            padding: EdgeInsets.all(70.0),
+            child: ChatHeader(
+              name: 'None',
+            ),
+          ),
         ),
-
-        title: const Center(child: Padding(
-          padding: EdgeInsets.all(70.0),
-          child: ChatHeader(),
-        )),
         backgroundColor: Colors.blue,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: const [
-            ChatWidget(alignment: Alignment.topLeft,),
-            ChatWidget(alignment: Alignment.topRight,),
-          ],
-        ),
+      body: Column(
+        children: [
+          Expanded(
+            child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('massages')
+                    .where("room_id", isEqualTo: widget.roomId)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  return ListView(
+                      children: snapshot.data!.docs.map((document) {
+                    final map = document.data();
+                    final senderName = db.collection("users").doc(document["sender_Id"]).get();
+
+                    return ChatWidget(
+                      alignment: user!.uid == map["sender_Id"]
+                          ? Alignment.topRight
+                          : Alignment.topLeft,
+                      name: 'senderName["user_name"]',
+                      text: map["text"],
+                      date: map["timestamp"],
+                    );
+                  }).toList());
+                }),
+          ),
+        ],
       ),
     );
   }
