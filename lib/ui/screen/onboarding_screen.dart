@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:linky/ui/screen/register/register_screen.dart';
+import 'package:linky/ui/screen/register_screen.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
