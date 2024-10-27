@@ -1,33 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:linky/ui/widget/chat_header.dart';
+import 'package:intl/intl.dart';
 
 class ChatWidget extends StatelessWidget {
-  final Alignment alignment;
+  final bool isMe;
   final String name;
   final String text;
-  final String date;
+  final DateTime date;
 
   const ChatWidget(
       {super.key,
-      required this.alignment,
       required this.name,
       required this.text,
-      required this.date});
+      required this.date,
+        required this.isMe,});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
-      alignment: alignment,
       margin: const EdgeInsets.only(top: 20),
       child: Card(
-        color: Colors.grey[200],
+        color: isMe ? Colors.lightBlueAccent : Colors.grey[200],
         child: Wrap(
           children: [
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 0, 6),
-              child: ChatHeader(name: name),
-            ),
             Container(
               constraints: BoxConstraints(
                 maxWidth: MediaQuery.of(context).size.width * 0.7,
@@ -35,8 +31,8 @@ class ChatWidget extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
               child: Column(
                 children: [
-                  Text(text),
-                  Text(date),
+                  Text(text,style: TextStyle(fontSize: 16),),
+                  Text(DateFormat('HH:mm').format(date), textAlign: TextAlign.right,),
                 ],
               ),
             ),
