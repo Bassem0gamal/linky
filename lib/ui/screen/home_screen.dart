@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:linky/ui/screen/chat_screen.dart';
+import 'package:linky/ui/screen/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -36,15 +37,17 @@ class _HomeScreenState extends State<HomeScreen> {
             Padding(
               padding: const EdgeInsets.all(32.0),
               child: TextButton(
-                onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
-                  Navigator.pop(context);
-                },
-                child: const Text('Log-out',style: TextStyle(color: Colors.white),),
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                )
-              ),
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                    Navigator.pop(context);
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                  ),
+                  child: const Text(
+                    'Log-out',
+                    style: TextStyle(color: Colors.white),
+                  )),
             ),
           ],
         ),
@@ -82,6 +85,13 @@ class _HomeScreenState extends State<HomeScreen> {
             }).toList(),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => const SearchScreen()));
+        },
+        child: const Icon(Icons.search),
       ),
     );
   }
