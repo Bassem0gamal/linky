@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:linky/ui/data_source/last_seen_service.dart';
 import 'package:linky/ui/screen/chat_screen.dart';
 import 'package:linky/ui/screen/search_screen.dart';
+import 'package:linky/ui/data_source/users_name_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,15 +15,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final user = FirebaseAuth.instance.currentUser;
+  final db = FirebaseFirestore.instance;
+
+  final userNameService = UserNamesService();
+  final _chatroomLastSeen = ChatRoomLastSeen();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Colors.blue,
-          title: Padding(
-            padding: const EdgeInsets.all(100.0),
-            child: const Text('Linky'),
+          title: const Padding(
+            padding: EdgeInsets.all(100.0),
+            child: Text('Linky'),
           ),
           leading: Builder(builder: (BuildContext context) {
             return IconButton(
@@ -33,7 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: Drawer(
         child: ListView(
           children: [
-
             Padding(
               padding: const EdgeInsets.all(32.0),
               child: TextButton(
@@ -58,7 +63,6 @@ class _HomeScreenState extends State<HomeScreen> {
             .where("members", arrayContains: user!.uid)
             .snapshots(),
         builder: (context, snapshot) {
-
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -67,31 +71,67 @@ class _HomeScreenState extends State<HomeScreen> {
             children: snapshot.data!.docs.map((document) {
               final map = document.data() as Map<String, dynamic>;
               final roomId = document.id;
+              final lastMessage =
+                  (map["last_message_time"] as Timestamp).toDate();
+              final otherUserId = (map["members"] as List)
+                  .firstWhere((userId) => userId != user!.uid);
 
-              return ListTile(
-                leading: const CircleAvatar(),
-                // ToDo: Replace with user's profile picture
-                title: Text(map['name']),
-                // ToDo: Replace with last message and timestamp
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ChatScreen(roomId: roomId),
-                    ),
-                  );
-                },
-              );
+              return FutureBuilder(
+                  future: _chatroomLastSeen.getLastMessage(roomId),
+                  builder: (context, snapshot) {
+                    DateTime lastSeenMessage = snapshot.data ?? lastMessage;
+                    return ListTile(
+                      // ToDo: Replace with user's profile picture
+                      leading: const CircleAvatar(),
+                      title: FutureBuilder<String>(
+                        future: UserNamesService().getUserName(
+                            (map["members"] as List)
+                                .firstWhere((userId) => userId != user!.uid)),
+                        builder: (context, AsyncSnapshot<String> snapshot) {
+                          return Text(snapshot.data ?? '');
+                        },
+                      ),
+                      trailing: lastMessage.isAfter(lastSeenMessage)
+                          ? const Icon(Icons.circle,
+                              color: Colors.red, size: 10)
+                          : null,
+                      // ToDo: Replace with last message and timestamp
+                      onTap: () {
+                        _navigateToChat(
+                          otherUserId,
+                          roomId,
+                          lastMessage,
+                        );
+                        setState(() {
+                          lastSeenMessage = lastMessage;
+                        });
+                      },
+                    );
+                  });
             }).toList(),
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => const SearchScreen()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const SearchScreen()));
         },
         child: const Icon(Icons.search),
+      ),
+    );
+  }
+
+  Future<void> _navigateToChat(
+      String otherUserId, String chatRoomId, DateTime lastMessage) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatScreen(
+          roomId: chatRoomId,
+          otherUserId: otherUserId,
+          lastMessage: lastMessage,
+        ),
       ),
     );
   }
