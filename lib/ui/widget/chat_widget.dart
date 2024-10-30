@@ -3,13 +3,11 @@ import 'package:intl/intl.dart';
 
 class ChatWidget extends StatelessWidget {
   final bool isMe;
-  final String name;
   final String text;
   final DateTime date;
 
   const ChatWidget(
       {super.key,
-      required this.name,
       required this.text,
       required this.date,
         required this.isMe,});

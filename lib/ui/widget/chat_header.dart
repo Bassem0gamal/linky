@@ -6,16 +6,9 @@ class ChatHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Row(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // ToDo: Add the Avatar Icon
-        CircleAvatar(
-          backgroundColor: Colors.grey.shade500,
-          child: const Text('Un', style: TextStyle(color: Colors.white),),
-        ),
-
-        const SizedBox(width: 8),
-
         Text(
           name,
           style: const TextStyle(fontSize: 18),
