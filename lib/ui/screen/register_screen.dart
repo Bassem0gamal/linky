@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:linky/ui/screen/home_screen.dart';
@@ -112,6 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       _onRegisterPressed(
                         _emailTextController.text,
                         _passwordTextController.text,
+                        _userNameTextController.text,
                         context,
                       );
                     }
@@ -157,15 +159,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 }
 
-_onRegisterPressed(String email, String password, context) async {
+_onRegisterPressed(String email, String password, String name, context) async {
+  final db = FirebaseFirestore.instance;
+  var userId = '';
+
   try {
     const CircularProgressIndicator(
       valueColor: AlwaysStoppedAnimation(Colors.blue),
     );
+
     await FirebaseAuth.instance.createUserWithEmailAndPassword(
       email: email,
       password: password,
-    );
+    ).then((userCredential) {
+       userId = userCredential.user!.uid;
+
+    });
+
+    final newUser = {
+      "name": name,
+      "email": email,
+    };
+
+    await db.collection("users").doc(userId).set(newUser);
 
     Navigator.push(
       context,
