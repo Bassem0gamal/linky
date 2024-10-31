@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:linky/ui/data_source/last_seen_service.dart';
 import 'package:linky/ui/screen/chat_screen.dart';
+import 'package:linky/ui/screen/register_screen.dart';
 import 'package:linky/ui/screen/search_screen.dart';
 import 'package:linky/ui/data_source/users_name_service.dart';
 
@@ -44,7 +45,12 @@ class _HomeScreenState extends State<HomeScreen> {
               child: TextButton(
                   onPressed: () async {
                     await FirebaseAuth.instance.signOut();
-                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RegisterScreen(),
+                      ),
+                    );
                   },
                   style: TextButton.styleFrom(
                     backgroundColor: Colors.blue,
