@@ -79,7 +79,8 @@ class _HomeScreenState extends State<HomeScreen> {
               return FutureBuilder(
                   future: _chatroomLastSeen.getLastMessage(roomId),
                   builder: (context, snapshot) {
-                    DateTime lastSeenMessage = snapshot.data ?? lastMessage;
+                    DateTime lastSeenMessage =
+                        snapshot.data ?? DateTime.fromMillisecondsSinceEpoch(0);
                     return ListTile(
                       // ToDo: Replace with user's profile picture
                       leading: const CircleAvatar(),
@@ -92,8 +93,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ),
                       trailing: lastMessage.isAfter(lastSeenMessage)
-                          ? const Icon(Icons.circle,
-                              color: Colors.red, size: 10)
+                          ? const Text(
+                              'new message',
+                              style: TextStyle(color: Colors.red),
+                            )
                           : null,
                       // ToDo: Replace with last message and timestamp
                       onTap: () {
@@ -107,8 +110,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         });
                       },
                     );
+
                   });
             }).toList(),
+
           );
         },
       ),
